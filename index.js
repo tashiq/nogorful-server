@@ -49,8 +49,8 @@ try {
     app.put('/students/:id', (req, res) => {
         const id = req.params.id;
         const { name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender } = req.body;
-        const updateQuery = 'UPDATE students SET (name = ?, img = ?, father = ?, mother = ?, addmission = ?, address =?, cls =?, parentsOccupation = ?, school = ?, gender = ?)  WHERE id = ?';
-        db.query(updateQuery, [name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender], (err, result) => {
+        const updateQuery = 'UPDATE students SET name = ?, img = ?, father = ?, mother = ?, addmission = ?, address =?, cls =?, parentsOccupation = ?, school = ?, gender = ?  WHERE id = ?';
+        db.query(updateQuery, [name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender, id], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
