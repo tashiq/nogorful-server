@@ -16,61 +16,63 @@ const db = mysql.createPool({
 try {
 
     app.get('/events', (req, res) => {
-        const selectQuery = `SELECT * FROM events`;
-        db.query(selectQuery, (err, result) => {
-            res.send(err ? err : result);
-        })
+        // const selectQuery = `SELECT * FROM events`;
+        // db.query(selectQuery, (err, result) => {
+        //     res.send(err ? err : result);
+        // })
+        // res.json([]);
     });
     app.get('/students', (req, res) => {
         const selectQuery = `SELECT * FROM students`;
         db.query(selectQuery, (err, result) => {
-            res.send(err ? err : result);
+            res.json(err ? err : result);
+        })
+    })
+    app.get('/students/:id', (req, res) => {
+        const id = req.params.id;
+        // console.log(id);
+        const selectQuery = `SELECT * FROM students WHERE id = ?`;
+        db.query(selectQuery, id, (err, result) => {
+            res.json(err ? err : result[0]);
         })
     })
     app.post('/students', (req, res) => {
         const data = req.body;
-        console.log(data);
-        // const insertQuery = `INSERT INTO students (name, img, father, mother, addmission, address, class, parentsOccupation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-        // db.query(insertQuery, [...data], (err, result) => {
-        //     res.json(err ? err : result);
-        // })
+        const { name, father, mother, addmission, cls, school, address, img, parentsJob, gender } = data;
+
+        const insertQuery = `INSERT INTO students (name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        db.query(insertQuery, [name, img ? img : '', father, mother, addmission, address, cls, parentsJob, school, gender], (err, result) => {
+            res.json(err ? err : result);
+        })
+
     })
     app.put('/students/:id', (req, res) => {
         const id = req.params.id;
-        const updateQuery = `
-        UPDATE students 
-        SET ()
-        `
+        const { name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender } = req.body;
+        const updateQuery = 'UPDATE students SET (name = ?, img = ?, father = ?, mother = ?, addmission = ?, address =?, cls =?, parentsOccupation = ?, school = ?, gender = ?)  WHERE id = ?';
+        db.query(updateQuery, [name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender], (err, result) => {
+            res.json(err ? err : result);
+            console.log(err ? err : result);
+        })
+
     })
     app.get('/teachers', (req, res) => {
         const selectQuery = `SELECT * FROM teachers`;
         db.query(selectQuery, (err, result) => {
-            if (err) {
-                console.log(err);
-                res.send(err);
-            }
-            else {
-                res.send(result);
-            }
+            res.json(err ? err : result);
         })
     })
     app.get('/branches', (req, res) => {
         const selectQuery = `SELECT * FROM branches`;
         db.query(selectQuery, (err, result) => {
-            if (err) {
-                console.log(err);
-                res.send(err);
-            }
-            else {
-                res.send(result);
-            }
+            res.json(err ? err : result);
         })
     })
     app.get('/info', (req, res) => {
-        res.send()
+        res.json([])
     })
     app.post('/admin', (req, res) => {
-        res.send()
+        res.json([])
     });
 }
 finally {
