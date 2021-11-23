@@ -23,16 +23,17 @@ try {
     })
     app.get('/students/:id', (req, res) => {
         const id = req.params.id;
-        const selectQuery = `SELECT * FROM students WHERE id = ? AND deleted = ?`;
-        db.query(selectQuery, [id, false], (err, result) => {
+        const selectQuery = `SELECT * FROM students WHERE id = ?`;
+        // console.log(id);
+        db.query(selectQuery, id, (err, result) => {
             res.json(err ? err : result[0]);
         })
     })
     app.post('/students', (req, res) => {
         const data = req.body;
-        const { name, father, mother, addmission, cls, school, address, img, parentsJob, gender, branch } = data;
+        const { name, father, mother, addmission, cls, school, address, img, parentsOccupation, gender, branch } = data;
         const insertQuery = `INSERT INTO students (name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        db.query(insertQuery, [name, img ? img : '', father, mother, addmission, address, cls, parentsJob, school, gender, branch], (err, result) => {
+        db.query(insertQuery, [name, img ? img : '', father, mother, addmission, address, cls, parentsOccupation, school, gender, branch], (err, result) => {
             res.json(err ? err : result);
         })
 
