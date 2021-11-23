@@ -54,7 +54,22 @@ try {
             res.json(err ? err : result);
         })
     })
-
+    app.get('/teachers', (req, res) => {
+        const selectQuery = `SELECT * FROM teachers`;
+        db.query(selectQuery, (err, result) => {
+            res.send(err ? err : result);
+        })
+    })
+    app.post('/teachers', (req, res) => {
+        const data = req.body;
+        const { name, phone, email, joined, degree, institution, address, img, gender, branch } = data;
+        console.log(data);
+        const insertQuery = "INSERT INTO teachers ( name, phone, email, joined, degree, institution, address, img, gender, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        db.query(insertQuery, [name, phone ? phone : '', email || '', joined, degree, institution, address || '', img || '', gender, branch], (err, result) => {
+            res.json(err ? err : result);
+            console.log(err);
+        })
+    })
     app.get('/events', (req, res) => {
         // const selectQuery = `SELECT * FROM events`;
         // db.query(selectQuery, (err, result) => {
@@ -62,12 +77,6 @@ try {
         // })
         res.json([]);
     });
-    app.get('/teachers', (req, res) => {
-        const selectQuery = `SELECT * FROM teachers`;
-        db.query(selectQuery, (err, result) => {
-            res.json(err ? err : result);
-        })
-    })
     app.get('/branches', (req, res) => {
         const selectQuery = `SELECT * FROM branches`;
         db.query(selectQuery, (err, result) => {
