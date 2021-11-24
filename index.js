@@ -60,6 +60,13 @@ try {
             res.send(err ? err : result);
         })
     })
+    app.get('/teachers/:id', (req, res) => {
+        const id = req.params.id;
+        const selectQuery = `SELECT * FROM teachers WHERE id = ?`;
+        db.query(selectQuery, id, (err, result) => {
+            res.send(err ? err : result[0]);
+        })
+    })
     app.post('/teachers', (req, res) => {
         const data = req.body;
         const { name, phone, email, joined, degree, institution, address, img, gender, branch } = data;
@@ -68,6 +75,21 @@ try {
         db.query(insertQuery, [name, phone ? phone : '', email || '', joined, degree, institution, address || '', img || '', gender, branch], (err, result) => {
             res.json(err ? err : result);
             console.log(err);
+        })
+    })
+    app.put('/teachers/:id', (req, res) => {
+        const id = req.params.id;
+        const { name, img, email, phone, joined, address, degree, institution, gender, branch } = req.body;
+        const updateQuery = 'UPDATE teachers SET name = ?, img = ?, email = ?, phone = ?, joined = ?, address =?, degree =?,  institution = ?, gender = ?, branch=?  WHERE id = ?';
+        db.query(updateQuery, [name, img, email, phone, joined, address, degree, institution, gender, branch, id], (err, result) => {
+            res.json(err ? err : result);
+        })
+    })
+    app.delete('/teachers/:id', (req, res) => {
+        const id = req.params.id;
+        const deleteQuery = `DELETE FROM teachers WHERE id = ?`;
+        db.query(deleteQuery, id, (err, result) => {
+            res.json(err ? err : result);
         })
     })
     app.get('/events', (req, res) => {
