@@ -93,12 +93,56 @@ try {
         })
     })
     app.get('/events', (req, res) => {
-        // const selectQuery = `SELECT * FROM events`;
-        // db.query(selectQuery, (err, result) => {
-        //     res.send(err ? err : result);
-        // })
+        const selectQuery = `SELECT * FROM events`;
+        db.query(selectQuery, (err, result) => {
+            res.send(err ? err : result);
+        })
         res.json([]);
     });
+    app.post('/events', (req, res) => {
+        const { eventName, place, date, guests } = req.body;
+        let eventId;
+        // insert into events
+        mysql.query('SELECT id FROM events WHERE name = ? AND place = ?', [eventName, place], (err, result) => {
+            if (result[0].id) {
+                eventId = result[0].id;
+            }
+            else {
+                const insertEvent = 'INSERT INTO events (name, place) VALUES (?, ?)';
+                mysql.query(insertEvent, [eventName, place], (err, result) => {
+                    mysql.query('SELECT id FROM events WHERE name=? AND place =?', [eventName, place], (err, result) => {
+                        eventId = result[0].id;
+                    })
+
+                })
+            }
+        })
+        // insert into guests
+        guests.array.forEach(guest => {
+            // check whether it is still available
+            const { gName, gPhone, gRole } = guest;
+            let guestId;
+            mysql.query('SELECT id FROM guests WHERE phone = ?', gPhone, (err, result) => {
+                if (result[0].id) {
+                    guestId = result[0].id;
+                }
+                else {
+                    // insert if not available
+                    const insertGuest = 'INSERT INTO guests (name, phone, role) VALUES (?, ?, ?)';
+                    mysql.query(insertGuest, [gName, gPhone, gRole], (err, result) => {
+                        mysql.query('SELECT id FROM guests WHERE phone = ?', gPhone, (err, result) => {
+                            guestId = result[0].id;
+                        })
+                    })
+                }
+                const insertEventG = 'INSERT INTO event-guest (date, guestId, eventId) VALUES (?, ?, ?)';
+                mysql.query(insertEventG, [eventDate, guestId, eventId], (err, result) => {
+                    console.log(result);
+                })
+            })
+        });
+
+    })
     app.get('/branches', (req, res) => {
         const selectQuery = `SELECT * FROM branches`;
         db.query(selectQuery, (err, result) => {
