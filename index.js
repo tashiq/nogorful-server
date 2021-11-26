@@ -94,11 +94,10 @@ try {
         })
     })
     app.get('/events', (req, res) => {
-        const selectQuery = `SELECT * FROM events`;
-        db.query(selectQuery, (err, result) => {
+        const eventGetQuery = "SELECT * FROM events, guests, eventguest WHERE eventguest.guestId = guests.id and eventguest.eventId = events.id"
+        db.query(eventGetQuery, (err, result) => {
             res.send(err ? err : result);
         })
-        res.json([]);
     });
     app.post('/events', (req, res) => {
         const { event, guests } = req.body;
@@ -157,9 +156,30 @@ try {
             res.json(err ? err : result);
         })
     })
-    app.get('/info', (req, res) => {
-        res.json([])
+    app.post('/branches', (req, res) => {
+        const { description, location, position, time } = req.body;
+        const branchPost = "INSERT INTO branches (location, position, description, time) VALUES (?, ?, ?, ?)";
+        db.query(branchPost, [description, location, position, time], (err, result) => {
+            res.json(err ? err : result);
+        })
     })
+    app.get('/branches/:id', (req, res) => {
+        const { id } = req.params;
+        const getBranch = 'SELECT * FROM branches WHERE id = ?';
+        db.query(getBranch, id, (err, result) => {
+            res.json(err ? err : result);
+        })
+    })
+    app.put('/branches/:id', (req, res) => {
+        const { id } = req.params;
+        const { description, location, position, time } = req.body;
+        const branchPut = "UPDATE branches SET description= ?, location= ?, position=?, time=?"
+        db.query(branchPut, [description, location, position, time], (err, result) => {
+            res.json(err ? err : result);
+        })
+    })
+    // war begin
+
     app.post('/admin', (req, res) => {
         res.json([])
     });
