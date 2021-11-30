@@ -16,6 +16,15 @@ const db = mysql.createPool({
 try {
 
     app.get('/students', (req, res) => {
+        const branch = req.query.branch;
+        console.log(branch);
+        const query = 'SELECT id, name FROM students WHERE branch = ?';
+        db.query(query, branch, (err, result) => {
+            res.json(err ? err : result)
+        })
+    })
+
+    app.get('/students', (req, res) => {
         const selectQuery = `SELECT * FROM students`;
         db.query(selectQuery, (err, result) => {
             // console.log(err ? err : result);
@@ -92,6 +101,17 @@ try {
         db.query(deleteQuery, id, (err, result) => {
             res.json(err ? err : result);
         })
+    });
+    app.post('/attendance', (req, res) => {
+        const data = req.body;
+        const { teacherId, students, date } = data;
+        const query = 'INSERT INTO attendance (date, teacherId, studentId) VALUES (?, ?, ?)';
+        students.forEach(student => {
+            db.query(query, [date, teacherId, student], (err, result) => {
+                console.log(err ? err : result);
+            })
+        })
+        // console.log(data);
     })
     app.get('/events', (req, res) => {
         const eventGetQuery = "SELECT * FROM events, guests, eventguest WHERE eventguest.guestId = guests.id and eventguest.eventId = events.id"
