@@ -17,20 +17,22 @@ try {
 
     app.get('/students', (req, res) => {
         const branch = req.query.branch;
-        console.log(branch);
-        const query = 'SELECT id, name FROM students WHERE branch = ?';
-        db.query(query, branch, (err, result) => {
-            res.json(err ? err : result)
-        })
+        if (branch) {
+            const query = 'SELECT id, name FROM students WHERE branch = ?';
+            db.query(query, branch, (err, result) => {
+                res.json(err ? err : result)
+            })
+        }
+        else {
+            const selectQuery = `SELECT * FROM students`;
+            db.query(selectQuery, (err, result) => {
+                // console.log(err ? err : result);
+                res.json(err ? err : result);
+            })
+        }
     })
 
-    app.get('/students', (req, res) => {
-        const selectQuery = `SELECT * FROM students`;
-        db.query(selectQuery, (err, result) => {
-            // console.log(err ? err : result);
-            res.json(err ? err : result);
-        })
-    })
+
     app.get('/students/:id', (req, res) => {
         const id = req.params.id;
         const selectQuery = `SELECT * FROM students WHERE id = ?`;
@@ -112,6 +114,29 @@ try {
             })
         })
         // console.log(data);
+    })
+    app.get('/attendance', (req, res) => {
+        const { teacher, student, date } = req.query;
+        // console.log(student);
+        //res.json('Hello')
+        const attendanceQ = "SELECT  students.name student, students.id studentId, teachers.name teacher, teachers.id teacherId, attendance.date date FROM students JOIN attendance ON students.id = attendance.studentId JOIN teachers ON attendance.teacherId = teachers.id"
+        db.query(attendanceQ, (err, result) => {
+            let final = result;
+            if (result) {
+                if (teacher) {
+                    final = result.filter(single => single.teacherId == teacher);
+                }
+                if (student) {
+                    final = final.filter(single => (single.studentId == student));
+                    // console.log('here');
+                    console.log(final);
+                }
+                if (date) {
+                    final = final.filter(single => (single.date == date))
+                }
+                res.json(final);
+            }
+        })
     })
     app.get('/events', (req, res) => {
         const eventGetQuery = "SELECT * FROM events, guests, eventguest WHERE eventguest.guestId = guests.id and eventguest.eventId = events.id"
@@ -200,11 +225,16 @@ try {
             res.json(err ? err : result);
         })
     })
-    // war begin
 
     app.post('/admin', (req, res) => {
         res.json([])
     });
+    app.get('/projects', (req, res) => {
+        const projectQuery = 'SELECT * FROM projects';
+        db.query(projectQuery, (err, result) => {
+            res.json(err ? err : result);
+        })
+    })
 }
 finally {
 
