@@ -226,8 +226,9 @@ try {
         })
     })
 
-    app.post('/admin', (req, res) => {
-        res.json([])
+    app.post('/newuser', (req, res) => {
+        const data = req.body;
+
     });
     app.get('/projects', (req, res) => {
         const projectQuery = 'SELECT * FROM projects';
