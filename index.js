@@ -13,13 +13,6 @@ const db = mysql.createPool({
     password: '',
     database: 'nogorful'
 })
-console.log({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_SECRET,
-    database: process.env.MYSQL_DB
-})
-
 try {
 
     app.get('/students', (req, res) => {
@@ -37,9 +30,7 @@ try {
                 res.json(err ? err : result);
             })
         }
-    })
-
-
+    });
     app.get('/students/:id', (req, res) => {
         const id = req.params.id;
         const selectQuery = `SELECT * FROM students WHERE id = ?`;
@@ -47,7 +38,7 @@ try {
         db.query(selectQuery, id, (err, result) => {
             res.json(err ? err : result[0]);
         })
-    })
+    });
     app.post('/students', (req, res) => {
         const data = req.body;
         const { name, father, mother, addmission, cls, school, address, img, parentsOccupation, gender, branch } = data;
@@ -56,7 +47,7 @@ try {
             res.json(err ? err : result);
         })
 
-    })
+    });
     app.put('/students/:id', (req, res) => {
         const id = req.params.id;
         const { name, img, father, mother, addmission, address, cls, parentsOccupation, school, gender, branch } = req.body;
@@ -65,27 +56,27 @@ try {
             res.json(err ? err : result);
         })
 
-    })
+    });
     app.delete('/students/:id', (req, res) => {
         const id = req.params.id;
         const deleteQuery = `DELETE FROM students WHERE id = ?`;
         db.query(deleteQuery, id, (err, result) => {
             res.json(err ? err : result);
         })
-    })
+    });
     app.get('/teachers', (req, res) => {
         const selectQuery = `SELECT * FROM teachers`;
         db.query(selectQuery, (err, result) => {
             res.send(err ? err : result);
         })
-    })
+    });
     app.get('/teachers/:id', (req, res) => {
         const id = req.params.id;
         const selectQuery = `SELECT * FROM teachers WHERE id = ?`;
         db.query(selectQuery, id, (err, result) => {
             res.send(err ? err : result[0]);
         })
-    })
+    });
     app.post('/teachers', (req, res) => {
         const data = req.body;
         const { name, phone, email, joined, degree, institution, address, img, gender, branch } = data;
@@ -95,7 +86,7 @@ try {
             res.json(err ? err : result);
             // console.log(err);
         })
-    })
+    });
     app.put('/teachers/:id', (req, res) => {
         const id = req.params.id;
         const { name, img, email, phone, joined, address, degree, institution, gender, branch } = req.body;
@@ -103,7 +94,7 @@ try {
         db.query(updateQuery, [name, img, email, phone, joined, address, degree, institution, gender, branch, id], (err, result) => {
             res.json(err ? err : result);
         })
-    })
+    });
     app.delete('/teachers/:id', (req, res) => {
         const id = req.params.id;
         const deleteQuery = `DELETE FROM teachers WHERE id = ?`;
@@ -121,7 +112,7 @@ try {
             })
         })
         // console.log(data);
-    })
+    });
     app.get('/attendance', (req, res) => {
         const { teacher, student, date } = req.query;
         // console.log(student);
@@ -144,7 +135,7 @@ try {
                 res.json(final);
             }
         })
-    })
+    });
     app.get('/events', (req, res) => {
         const eventGetQuery = "SELECT * FROM events, guests, eventguest WHERE eventguest.guestId = guests.id and eventguest.eventId = events.id"
         db.query(eventGetQuery, (err, result) => {
@@ -201,20 +192,20 @@ try {
             })
         });
 
-    })
+    });
     app.get('/branches', (req, res) => {
         const selectQuery = `SELECT * FROM branches`;
         db.query(selectQuery, (err, result) => {
             res.json(err ? err : result);
         })
-    })
+    });
     app.post('/branches', (req, res) => {
         const { description, location, position, time, img } = req.body;
         const branchPost = "INSERT INTO branches (location, position, description, time, img) VALUES (?, ?, ?, ?)";
         db.query(branchPost, [description, location, position, time, img || ""], (err, result) => {
             res.json(err ? err : result);
         })
-    })
+    });
     app.get('/branches/:id', (req, res) => {
         const { id } = req.params;
         // console.log(id);
@@ -223,7 +214,7 @@ try {
             res.json(err ? err : result[0]);
             // console.log(err ? err : result[0]);
         })
-    })
+    });
     app.put('/branches/:id', (req, res) => {
         const { id } = req.params;
         const { description, location, position, time, img } = req.body;
@@ -231,18 +222,29 @@ try {
         db.query(branchPut, [description, location, position, time, img, id || ""], (err, result) => {
             res.json(err ? err : result);
         })
-    })
-
+    });
     app.post('/newuser', (req, res) => {
         const data = req.body;
-
+        const { FirstName, LastName, Phone, Email, Adress, Education } = data;
+        const insertUser = "INSERT INTO user (firstName, lastName, email, phone, address, education) VALUES (?, ?, ?, ?, ?, ?)";
+        db.query(insertUser, [FirstName, LastName, Email, Phone, Adress, Education], (err, result) => {
+            res.send(err ? err : result);
+        })
+    });
+    app.get('/user/:email', (req, res) => {
+        const { email } = req.params;
+        const getUser = "SELECT * FROM user WHERE email = ?";
+        db.query(getUser, email, (err, result) => {
+            res.json(err ? err : result);
+            console.log(err ? err : result);
+        })
     });
     app.get('/projects', (req, res) => {
         const projectQuery = 'SELECT * FROM projects';
         db.query(projectQuery, (err, result) => {
             res.json(err ? err : result);
         })
-    })
+    });
 }
 finally {
 
@@ -253,8 +255,7 @@ app.get('/', (req, res) => {
         res.send(err ? err : result)
     })
     // res.send('working');
-})
-
+});
 app.listen(port, () => {
     console.log(port);
 })
