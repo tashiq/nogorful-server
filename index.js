@@ -108,7 +108,7 @@ try {
         const query = 'INSERT INTO attendance (date, teacherId, studentId) VALUES (?, ?, ?)';
         students.forEach(student => {
             db.query(query, [date, teacherId, student], (err, result) => {
-                console.log(err ? err : result);
+                // console.log(err ? err : result);
             })
         })
         // console.log(data);
@@ -127,7 +127,7 @@ try {
                 if (student) {
                     final = final.filter(single => (single.studentId == student));
                     // console.log('here');
-                    console.log(final);
+                    // console.log(final);
                 }
                 if (date) {
                     final = final.filter(single => (single.date == date))
@@ -236,9 +236,19 @@ try {
         const getUser = "SELECT * FROM user WHERE email = ?";
         db.query(getUser, email, (err, result) => {
             res.json(err ? err : result);
-            console.log(err ? err : result);
+            // console.log(err ? err : result);
         })
     });
+    app.put('/admin', (req, res) => {
+        const { email } = req.query;
+        const v = "admin";
+        // console.log(email);
+        const upQuery = 'UPDATE user SET role = ? WHERE email = ?';
+        db.query(upQuery, [v, email], (err, result) => {
+            res.json(err ? err : result)
+            // console.log(err ? err : result);
+        })
+    })
     app.get('/projects', (req, res) => {
         const projectQuery = 'SELECT * FROM projects';
         db.query(projectQuery, (err, result) => {
