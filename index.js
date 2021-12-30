@@ -8,23 +8,22 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: true }))
 const mysql = require('mysql')
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'nogorful'
+    host: 'sql6.freemysqlhosting.net',
+    user: 'sql6461077',
+    password: 'kaxaNhCYlb',
+    database: 'sql6461077'
 })
 try {
 
     app.get('/students', (req, res) => {
-        const selectQuery = `SELECT * FROM students`;
+        const selectQuery = `SELECT * FROM students `;
         db.query(selectQuery, (err, result) => {
-            // console.log(err ? err : result);
             res.json(err ? err : result);
         })
     })
     app.get('/students/:id', (req, res) => {
         const id = req.params.id;
-        const selectQuery = `SELECT * FROM students WHERE id = ?`;
+        const selectQuery = `SELECT * FROM students WHERE sid = ?`;
         // console.log(id);
         db.query(selectQuery, id, (err, result) => {
             res.json(err ? err : result[0]);
@@ -181,6 +180,7 @@ try {
         })
     })
     // war begin
+    // donor, receiver, attendance, self dependency
 
     app.post('/admin', (req, res) => {
         res.json([])
@@ -190,11 +190,9 @@ finally {
 
 }
 app.get('/', (req, res) => {
-    const testQuery = `SELECT eventId, guestId FROM eventGuest`;
-    db.query(testQuery, (err, result) => {
-        res.send(err ? err : result)
-    })
-    // res.send('working');
+
+
+    res.send('working');
 })
 
 app.listen(port, () => {
