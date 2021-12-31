@@ -5,10 +5,7 @@ app.use(cors());
 app.use(express.json())
 const port = process.env.PORT || 4000;
 const mysql = require('mysql');
-<<<<<<< HEAD
-=======
 const { json } = require('body-parser');
->>>>>>> 06baacaa5bcc0a3fd3f843415f7a8473a5a72c1a
 const db = mysql.createPool({
     host: 'sql6.freemysqlhosting.net',
     user: 'sql6461077',
@@ -91,7 +88,6 @@ app.put('/students/:id', (req, res) => {
     db.query(updateQuery, [firstName, lastName, classs, fatherFirstName, fatherLastName, branch, id], (err, result) => {
         res.json(err ? err : result);
     })
-<<<<<<< HEAD
 
 });
 app.delete('/students/:id', (req, res) => {
@@ -158,60 +154,95 @@ app.get('/attendance', (req, res) => {
     })
 });
 app.get('/events', (req, res) => {
-    const eventGetQuery = "SELECT * FROM attend JOIN events ON attend.eventName = events.name JOIN guests ON attend.guestPhone = guests.phone"
+    const eventGetQuery = "SELECT * FROM attend JOIN events ON attend.eventName = events.name JOIN guest ON attend.guestPhone = guest.phone"
     db.query(eventGetQuery, (err, result) => {
         res.send(err ? err : result);
     })
 });
-app.post('/events', (req, res) => {
-    const { guest, eventName, date, cost, noOfAttendance } = req.body;
-    const insertQ = `INSERT INTO attend (guestPhone, eventName, date, cost, noOfAttendance) VALUES (?, ?, ?, ?, ?)`;
-    guest.map(guestPhone => {
-        db.query(insertQ, [guestPhone, eventName, date, cost, noOfAttendance], (err, result) => {
-            res.json(err ? err : result)
-        })
+//     app.post('/events', (req, res) => {
+//         const { event, guests } = req.body;
+//         const { eventName, place, date } = event;
+//         // console.log(req.body);
+//         // console.log(date);
+//         let eventId;
+//         // insert into events
+//         db.query('SELECT id FROM events WHERE name = ? AND place = ?', [eventName, place], (err, result) => {
+//             // console.log(result[0]);
+//             if (result[0]) {
+//                 eventId = result[0].id;
+//             }
+//             else {
+//                 const insertEvent = 'INSERT INTO events (name, place) VALUES (?, ?)';
+//                 db.query(insertEvent, [eventName, place], (err, result) => {
+//                     db.query('SELECT id FROM events WHERE name=? AND place =?', [eventName, place], (err, result) => {
+//                         eventId = result[0].id;
+//                     })
+
+//                 })
+//             }
+//         })
+//         // insert into guests
+//         guests?.forEach(guest => {
+//             // check whether it is still available
+//             const { gName, gPhone, gRole } = guest;
+//             let guestId;
+//             db.query('SELECT id FROM guests WHERE phone = ?', gPhone, (err, result) => {
+//                 // console.log(result);
+//                 if (result[0]) {
+
+//                     guestId = result[0].id;
+//                 }
+//                 else {
+//                     // insert if not available
+//                     const insertGuest = 'INSERT INTO guests (name, phone, role) VALUES (?, ?, ?)';
+//                     db.query(insertGuest, [gName, gPhone, gRole], (err, result) => {
+//                         db.query('SELECT id FROM guests WHERE phone = ?', gPhone, (err, result) => {
+//                             guestId = result[0].id;
+//                         })
+//                     })
+//                 }
+//                 // console.log(guestId);
+//                 const insertEventG = 'INSERT INTO eventguest (date, guestId, eventId) VALUES (?, ?, ?)';
+//                 db.query(insertEventG, [date, guestId, eventId], (err, result) => {
+//                     // console.log(err ? err : result);
+//                 })
+//             })
+//         });
+
+//     });
+
+
+
+app.post('/newuser', (req, res) => {
+    const data = req.body;
+    const { FirstName, LastName, Phone, Email, Adress, Education } = data;
+    const insertUser = "INSERT INTO user (firstName, lastName, email, phone, address, education) VALUES (?, ?, ?, ?, ?, ?)";
+    db.query(insertUser, [FirstName, LastName, Email, Phone, Adress, Education], (err, result) => {
+        res.send(err ? err : result);
     })
 });
-app.put('/admin', (req, res) => {
-    const { email } = req.query;
-    const v = "admin";
-    console.log(email);
-    const upQuery = 'UPDATE teachers SET role = ? WHERE phone = ?';
-    db.query(upQuery, ['admin', email], (err, result) => {
-        res.json(err ? err : result)
-        console.log(err ? err : result);
-    })
-})
-// ocod 
-app.get('/donor', (req, res) => {
-    const getAll = 'SELECT * FROM donor';
-    db.query(getAll, (err, result) => {
-        res.json(err ? err : result)
-    })
-})
-app.get('/donor/:phone', (req, res) => {
-    const { phone } = req.params;
-    const getAll = 'SELECT * FROM donor dPhone=?';
-    db.query(getAll, (err, result) => {
-        res.json(err ? err : result)
-    })
-})
+//     app.get('/user/:email', (req, res) => {
+//         const { email } = req.params;
+//         const getUser = "SELECT * FROM user WHERE email = ?";
+//         db.query(getUser, email, (err, result) => {
+//             res.json(err ? err : result);
+//             // console.log(err ? err : result);
+//         })
+//     });
+//     app.put('/admin', (req, res) => {
+//         const { email } = req.query;
+//         const v = "admin";
+//         console.log(email);
+//         const upQuery = 'UPDATE user SET role = ? WHERE email = ?';
+//         db.query(upQuery, ['admin', email], (err, result) => {
+//             res.json(err ? err : result)
+//             console.log(err ? err : result);
+//         })
+//     })
+// finally {
 
-app.get('/child', (req, res) => {
-    const getAll = 'SELECT * FROM child';
-    db.query(getAll, (err, result) => {
-        res.json(err ? err : result)
-    })
-})
-app.get('/ocod', (req, res) => {
-    const getAll = 'SELECT * FROM child JOIN donor ON donor.phone = child.dPhone';
-    db.query(getAll, (err, result) => {
-        res.json(err ? err : result)
-    })
-})
-app.get('/', (req, res) => {
-    res.send('working')
-})
+// }
+
 app.listen(port, () => {
     console.log(port);
 })

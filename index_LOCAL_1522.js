@@ -5,10 +5,6 @@ app.use(cors());
 app.use(express.json())
 const port = process.env.PORT || 4000;
 const mysql = require('mysql');
-<<<<<<< HEAD
-=======
-const { json } = require('body-parser');
->>>>>>> 06baacaa5bcc0a3fd3f843415f7a8473a5a72c1a
 const db = mysql.createPool({
     host: 'sql6.freemysqlhosting.net',
     user: 'sql6461077',
@@ -91,7 +87,6 @@ app.put('/students/:id', (req, res) => {
     db.query(updateQuery, [firstName, lastName, classs, fatherFirstName, fatherLastName, branch, id], (err, result) => {
         res.json(err ? err : result);
     })
-<<<<<<< HEAD
 
 });
 app.delete('/students/:id', (req, res) => {
