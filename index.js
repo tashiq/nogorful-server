@@ -20,7 +20,7 @@ app.post('/branches', (req, res) => {
 });
 //crud -> create(insert), update, delete
 app.get('/branches', (req, res) => {
-    const selectQuery = `SELECT * FROM teachers`;
+    const selectQuery = `SELECT * FROM branches`;
     db.query(selectQuery, (err, result) => {
         res.json(err ? err : result);
     })
@@ -205,8 +205,70 @@ app.post('/event', (req, res) => {
         console.log(err ? err : result);
     })
 })
+app.get('/event/:name', (req, res) => {
+    const { name } = req.params;
+    const insertQ = `SELECT * FROM events WHERE name=? `;
+    db.query(insertQ, name, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.delete('/event/:name', (req, res) => {
+    const { name } = req.params;
+    const insertQ = `DELETE FROM events WHERE name=? `;
+    db.query(insertQ, name, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.post('/newuser', (req, res) => {
+    const { firstName, lastName, email } = req.body;
+    const q = `insert into user (firstName, lastName, email) values (?, ?, ?)`
+    db.query(q, [firstName, lastName, email], (err, result) => {
+        res.json(err ? err : result);
+        console.log(err);
+    })
+})
+app.get('/user/:email', (req, res) => {
+    const { email } = req.params;
+    const q = `select * from user where email = ?`
+    db.query(q, [email], (err, result) => {
+        res.json(err ? err : result);
+    })
+})
+app.put('/event/:eName', (req, res) => {
+    const { eName } = req.params;
+    const { name, description } = req.body;
+    const insertQ = `UPDATE events SET name=?, description=? WHERE name=? `;
+    db.query(insertQ, [name, description, eName], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
 app.get('/event', (req, res) => {
     const insertQ = `SELECT * FROM events`;
+    db.query(insertQ, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.get('/guests', (req, res) => {
+    const insertQ = `SELECT * FROM guests`;
+    db.query(insertQ, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.delete('/guests/:phone', (req, res) => {
+    const { phone } = req.params;
+    const insertQ = `DELETE FROM guests WHERE phone=?`;
+    db.query(insertQ, phone, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.get('/child', (req, res) => {
+    const insertQ = `SELECT * FROM child`;
     db.query(insertQ, (err, result) => {
         res.json(err ? err : result)
         console.log(err ? err : result);
@@ -215,8 +277,7 @@ app.get('/event', (req, res) => {
 app.put('/admin', (req, res) => {
     const { email } = req.query;
     const v = "admin";
-    console.log(email);
-    const upQuery = 'UPDATE teachers SET role = ? WHERE phone = ?';
+    const upQuery = 'UPDATE user SET role = ? WHERE email = ?';
     db.query(upQuery, ['admin', email], (err, result) => {
         res.json(err ? err : result)
         console.log(err ? err : result);
@@ -229,13 +290,63 @@ app.get('/donor', (req, res) => {
         res.json(err ? err : result)
     })
 })
+app.delete('/child/:id', (req, res) => {
+    const { id } = req.params;
+    const getAll = 'DELETE FROM child WHERE id=?';
+    db.query(getAll, id, (err, result) => {
+        res.json(err ? err : result)
+    })
+})
+app.get('/child/:id', (req, res) => {
+    const { id } = req.params;
+    const getAll = 'SELECT * FROM child WHERE id=?';
+    db.query(getAll, id, (err, result) => {
+        res.json(err ? err : result)
+    })
+})
+app.put('/child/:id', (req, res) => {
+    const { id } = req.params;
+    const { firstName, lastName, parentsPhone, fatherFirstName, fatherLastName, address } = req.body;
+    console.log(req.body);
+    const getAll = 'UPDATE child SET firstName = ?, lastName = ?, parentsPhone = ?, fatherFirstName = ?, fatherLastName = ?, address = ?  WHERE id=?';
+    db.query(getAll, [firstName, lastName, parentsPhone, fatherFirstName, fatherLastName, address, id], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.put('/guest/:phn', (req, res) => {
+    const { phn } = req.params;
+    const { firstName, lastName, phone, role } = req.body;
+    const getAll = 'UPDATE guests SET firstName = ?, lastName = ?, phone = ?, role=?  WHERE phone=?';
+    db.query(getAll, [firstName, lastName, phone, role, phn], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.put('/donor/:phn', (req, res) => {
+    const { phn } = req.params;
+    const { firstName, lastName, phone, salary } = req.body;
+    console.log(req.body);
+    const getAll = 'UPDATE donor SET firstName = ?, lastName = ?, phone = ?, salary = ?  WHERE phone=?';
+    db.query(getAll, [firstName, lastName, phone, salary, phn], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.get('/guests/:phone', (req, res) => {
+    const { phone } = req.params;
+    const getAll = 'SELECT * FROM donor WHERE phone=?';
+    db.query(getAll, phone, (err, result) => {
+        res.json(err ? err : result)
+    })
+})
 app.post('/donor', (req, res) => {
     const data = req.body;
     const { firstName, lastName, phone, salary } = data
     const check = 'select * from donor where phone = ?'
     let resu = null;
     db.query(check, phone, (err, result) => {
-        if (!result.length) {
+        if (!result?.length) {
             const inDonor = 'INSERT  INTO  donor (firstName, lastName , phone , salary)VALUES (?, ?, ?, ?)';
             db.query(inDonor, [firstName, lastName, phone, salary], (err2, result2) => {
                 res.json(err2 ? err2 : result2)
@@ -253,22 +364,30 @@ app.post('/child', (req, res) => {
         console.log(err ? err : result);
     })
 })
+app.delete('/donor/:phone', (req, res) => {
+    const { phone } = req.params;
+    const getAll = 'DELETE FROM donor WHERE phone=?';
+    db.query(getAll, phone, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err);
+    })
+})
 app.get('/donor/:phone', (req, res) => {
     const { phone } = req.params;
-    const getAll = 'SELECT * FROM donor dPhone=?';
-    db.query(getAll, (err, result) => {
+    const getAll = 'SELECT * FROM donor WHERE phone=?';
+    db.query(getAll, phone, (err, result) => {
         res.json(err ? err : result)
     })
 })
-
-app.get('/child', (req, res) => {
-    const getAll = 'SELECT * FROM child';
-    db.query(getAll, (err, result) => {
+app.get('/guest/:phone', (req, res) => {
+    const { phone } = req.params;
+    const getAll = 'SELECT * FROM guests WHERE phone=?';
+    db.query(getAll, phone, (err, result) => {
         res.json(err ? err : result)
     })
 })
 app.get('/ocod', (req, res) => {
-    const getAll = 'SELECT * FROM child JOIN donor ON donor.phone = child.dPhone';
+    const getAll = 'SELECT id, child.firstName,child.lastName, fatherFirstName, fatherLastName, parentsPhone, address, donor.firstName dfn, donor.lastName dln FROM child JOIN donor ON donor.phone = child.dPhone';
     db.query(getAll, (err, result) => {
         res.json(err ? err : result)
     })
