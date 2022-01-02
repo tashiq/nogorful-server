@@ -18,8 +18,9 @@ app.post('/branches', (req, res) => {
         res.json(err ? err : result);
     })
 });
+//crud -> create(insert), update, delete
 app.get('/branches', (req, res) => {
-    const selectQuery = `SELECT * FROM branches`;
+    const selectQuery = `SELECT * FROM teachers`;
     db.query(selectQuery, (err, result) => {
         res.json(err ? err : result);
     })
@@ -35,6 +36,7 @@ app.get('/branches/:id', (req, res) => {
 });
 app.put('/branches/:id', (req, res) => {
     const { id } = req.params;
+    console.log(req.body);
     const { description, location, position, time, img } = req.body;
     const branchPut = "UPDATE branches SET description= ?, location= ?, position=?, time=?, img = ? WHERE id= ?"
     db.query(branchPut, [description, location, position, time, img, id || ""], (err, result) => {
@@ -72,12 +74,13 @@ app.get('/students', (req, res) => {
 });
 app.post('/students', (req, res) => {
     const data = req.body;
-    const { firstName, lastName, classs, fatherFirstName, fatherLastName } = data;
+    const { firstName, lastName, classs, fatherFirstName, fatherLastName, branch } = data;
     const insertQuery = `INSERT INTO 
-students (firstName, lastName, class, fatherFirstName, fatherLastName, branch) 
-VALUES (?, ?, ?, ?, ?, ?)`;
+    students (firstName, lastName, class, fatherFirstName, fatherLastName, branch) 
+    VALUES (?, ?, ?, ?, ?, ?)`;
     db.query(insertQuery, [firstName, lastName, classs, fatherFirstName, fatherLastName, branch], (err, result) => {
         res.json(err ? err : result);
+        console.log(err ? err : result);
     })
 });
 app.put('/students/:id', (req, res) => {
@@ -97,11 +100,21 @@ app.delete('/students/:id', (req, res) => {
         res.json(err ? err : result);
     })
 });
+
 app.get('/teachers', (req, res) => {
-    const selectQuery = `SELECT * FROM teachers`;
-    db.query(selectQuery, (err, result) => {
-        res.send(err ? err : result);
-    })
+    const { email } = req.query;
+    if (email) {
+        const selectQuery = `SELECT * FROM user where email = ?`;
+        db.query(selectQuery, email, (err, result) => {
+            res.send(err ? err : result);
+        })
+    }
+    else {
+        const selectQuery = `SELECT * FROM teachers`;
+        db.query(selectQuery, (err, result) => {
+            res.send(err ? err : result);
+        })
+    }
 });
 app.get('/teachers/:phone', (req, res) => {
     const phone = req.params.phone;
@@ -111,7 +124,9 @@ app.get('/teachers/:phone', (req, res) => {
     })
 });
 app.post('/teachers', (req, res) => {
+
     const data = req.body;
+    // console.log(JSON.stringify(data));
     const { phone, firstName, lastName, address, joindate, email } = data;
     // console.log(data);
     const insertQuery = `INSERT INTO teachers (phone, firstName,lastName, address, joindate,  email) VALUES (?, ?, ?, ?, ?, ?)`;
@@ -139,16 +154,18 @@ app.delete('/teachers/:phone', (req, res) => {
 app.post('/attendance', (req, res) => {
     const data = req.body;
     const { students, phone, date } = data;
-    const query = 'INSERT INTO attendance (date, phone, sid) VALUES (?, ?, ?)';
+    console.log(data);
+    const query = 'INSERT INTO takeAttendance (date, phone, sid) VALUES (?, ?, ?)';
     students.forEach(student => {
         db.query(query, [date, phone, student], (err, result) => {
-            // console.log(err ? err : result);
+            console.log(err ? err : result);
         })
     })
 });
 app.get('/attendance', (req, res) => {
     const { teacher, student, date } = req.query;
-    const attendanceQ = `SELECT * FROM takeAttendance JOIN students ON takeAttendance.sid = students.sid JOIN teachers ON takeAttendance.phone = teachers.phone`
+    const attendanceQ = `SELECT students.sid, students.firstName "sfn", students.lastName 'sln',students.branch 'branch', teachers.firstName 'tfn', teachers.lastName 'tln', teachers.email 'te' FROM takeAttendance JOIN students ON takeAttendance.sid = students.sid JOIN teachers ON takeAttendance.phone = teachers.phone
+`
     db.query(attendanceQ, (err, result) => {
         res.json(err ? err : result);
     })
@@ -157,17 +174,44 @@ app.get('/events', (req, res) => {
     const eventGetQuery = "SELECT * FROM attend JOIN events ON attend.eventName = events.name JOIN guests ON attend.guestPhone = guests.phone"
     db.query(eventGetQuery, (err, result) => {
         res.send(err ? err : result);
+        console.log(err ? err : result);
     })
 });
 app.post('/events', (req, res) => {
-    const { guest, eventName, date, cost, noOfAttendance } = req.body;
+    const { guests, eventData } = req.body;
+    const { eventName, date, cost, noOfAttendance } = eventData;
+    console.log(guests);
     const insertQ = `INSERT INTO attend (guestPhone, eventName, date, cost, noOfAttendance) VALUES (?, ?, ?, ?, ?)`;
-    guest.map(guestPhone => {
-        db.query(insertQ, [guestPhone, eventName, date, cost, noOfAttendance], (err, result) => {
+    guests.map(guest => {
+        db.query(insertQ, [guest, eventName, date, cost, noOfAttendance], (err, result) => {
             res.json(err ? err : result)
+            console.log(err ? err : result);
         })
     })
 });
+app.post('/guests', (req, res) => {
+    const data = req.body;
+    const { phone, firstName, lastName, role } = data;
+    const ins = `INSERT INTO guests(phone, firstName, lastName, role) VALUES (?, ?, ?, ?)`
+    db.query(ins, [phone, firstName, lastName, role], (err, result) => {
+        res.json(err ? err : result);
+    })
+})
+app.post('/event', (req, res) => {
+    const { eventName, description } = req.body
+    const insertQ = `INSERT INTO events (name, description) VALUES (?, ?)`;
+    db.query(insertQ, [eventName, description], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
+app.get('/event', (req, res) => {
+    const insertQ = `SELECT * FROM events`;
+    db.query(insertQ, (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
+    })
+})
 app.put('/admin', (req, res) => {
     const { email } = req.query;
     const v = "admin";
@@ -183,6 +227,30 @@ app.get('/donor', (req, res) => {
     const getAll = 'SELECT * FROM donor';
     db.query(getAll, (err, result) => {
         res.json(err ? err : result)
+    })
+})
+app.post('/donor', (req, res) => {
+    const data = req.body;
+    const { firstName, lastName, phone, salary } = data
+    const check = 'select * from donor where phone = ?'
+    let resu = null;
+    db.query(check, phone, (err, result) => {
+        if (!result.length) {
+            const inDonor = 'INSERT  INTO  donor (firstName, lastName , phone , salary)VALUES (?, ?, ?, ?)';
+            db.query(inDonor, [firstName, lastName, phone, salary], (err2, result2) => {
+                res.json(err2 ? err2 : result2)
+                console.log(err ? err2 : result2);
+            })
+        }
+    })
+})
+app.post('/child', (req, res) => {
+    const data = req.body;
+    const { firstName, lastName, parentsPhone, fatherFirstName, fatherLastName, address, dPhone } = data;
+    const inChild = 'INSERT  INTO  child ( firstName, lastName , parentsPhone ,fatherFirstName, fatherLastName, address, dPhone)VALUES (?, ?, ?, ?, ?, ?, ?)';
+    db.query(inChild, [firstName, lastName, parentsPhone, fatherFirstName, fatherLastName, address, dPhone], (err, result) => {
+        res.json(err ? err : result)
+        console.log(err ? err : result);
     })
 })
 app.get('/donor/:phone', (req, res) => {
