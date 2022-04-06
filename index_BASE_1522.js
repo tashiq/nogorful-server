@@ -18,14 +18,14 @@ try {
     app.get('/students', (req, res) => {
         const selectQuery = `SELECT * FROM students`;
         db.query(selectQuery, (err, result) => {
-            // console.log(err ? err : result);
+            // //console.log(err ? err : result);
             res.json(err ? err : result);
         })
     })
     app.get('/students/:id', (req, res) => {
         const id = req.params.id;
         const selectQuery = `SELECT * FROM students WHERE id = ?`;
-        // console.log(id);
+        // //console.log(id);
         db.query(selectQuery, id, (err, result) => {
             res.json(err ? err : result[0]);
         })
@@ -71,11 +71,11 @@ try {
     app.post('/teachers', (req, res) => {
         const data = req.body;
         const { name, phone, email, joined, degree, institution, address, img, gender, branch } = data;
-        // console.log(data);
+        // //console.log(data);
         const insertQuery = "INSERT INTO teachers ( name, phone, email, joined, degree, institution, address, img, gender, branch) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         db.query(insertQuery, [name, phone ? phone : '', email || '', joined, degree, institution, address || '', img || '', gender, branch], (err, result) => {
             res.json(err ? err : result);
-            // console.log(err);
+            // //console.log(err);
         })
     })
     app.put('/teachers/:id', (req, res) => {
@@ -102,12 +102,12 @@ try {
     app.post('/events', (req, res) => {
         const { event, guests } = req.body;
         const { eventName, place, date } = event;
-        // console.log(req.body);
-        // console.log(date);
+        // //console.log(req.body);
+        // //console.log(date);
         let eventId;
         // insert into events
         db.query('SELECT id FROM events WHERE name = ? AND place = ?', [eventName, place], (err, result) => {
-            // console.log(result[0]);
+            // //console.log(result[0]);
             if (result[0]) {
                 eventId = result[0].id;
             }
@@ -127,7 +127,7 @@ try {
             const { gName, gPhone, gRole } = guest;
             let guestId;
             db.query('SELECT id FROM guests WHERE phone = ?', gPhone, (err, result) => {
-                // console.log(result);
+                // //console.log(result);
                 if (result[0]) {
 
                     guestId = result[0].id;
@@ -141,10 +141,10 @@ try {
                         })
                     })
                 }
-                // console.log(guestId);
+                // //console.log(guestId);
                 const insertEventG = 'INSERT INTO eventguest (date, guestId, eventId) VALUES (?, ?, ?)';
                 db.query(insertEventG, [date, guestId, eventId], (err, result) => {
-                    // console.log(err ? err : result);
+                    // //console.log(err ? err : result);
                 })
             })
         });
@@ -165,11 +165,11 @@ try {
     })
     app.get('/branches/:id', (req, res) => {
         const { id } = req.params;
-        // console.log(id);
+        // //console.log(id);
         const getBranch = 'SELECT * FROM branches WHERE id = ?';
         db.query(getBranch, id, (err, result) => {
             res.json(err ? err : result[0]);
-            // console.log(err ? err : result[0]);
+            // //console.log(err ? err : result[0]);
         })
     })
     app.put('/branches/:id', (req, res) => {
@@ -198,5 +198,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(port);
+    //console.log(port);
 })

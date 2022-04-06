@@ -26,11 +26,11 @@ app.get('/branches', (req, res) => {
 });
 app.get('/branches/:id', (req, res) => {
     const { id } = req.params;
-    // console.log(id);
+    // //console.log(id);
     const getBranch = 'SELECT * FROM branches WHERE id = ?';
     db.query(getBranch, id, (err, result) => {
         res.json(err ? err : result[0]);
-        // console.log(err ? err : result[0]);
+        // //console.log(err ? err : result[0]);
     })
 });
 app.put('/branches/:id', (req, res) => {
@@ -65,7 +65,7 @@ app.get('/students', (req, res) => {
     else {
         const selectQuery = `SELECT * FROM students`;
         db.query(selectQuery, (err, result) => {
-            console.log(err ? err : result);
+            //console.log(err ? err : result);
             res.json(err ? err : result);
         })
     }
@@ -112,11 +112,11 @@ app.get('/teachers/:phone', (req, res) => {
 app.post('/teachers', (req, res) => {
     const data = req.body;
     const { phone, firstName, lastName, address, joindate, email } = data;
-    // console.log(data);
+    // //console.log(data);
     const insertQuery = `INSERT INTO teachers (phone, firstName,lastName, address, joindate,  email) VALUES (?, ?, ?, ?, ?, ?)`;
     db.query(insertQuery, [phone, firstName, lastName, address, joindate, email], (err, result) => {
         res.json(err ? err : result);
-        // console.log(err);
+        // //console.log(err);
     })
 });
 app.put('/teachers/:phn', (req, res) => {
@@ -141,7 +141,7 @@ app.post('/attendance', (req, res) => {
     const query = 'INSERT INTO attendance (date, phone, sid) VALUES (?, ?, ?)';
     students.forEach(student => {
         db.query(query, [date, phone, student], (err, result) => {
-            // console.log(err ? err : result);
+            // //console.log(err ? err : result);
         })
     })
 });
@@ -170,11 +170,11 @@ app.post('/events', (req, res) => {
 app.put('/admin', (req, res) => {
     const { email } = req.query;
     const v = "admin";
-    console.log(email);
+    //console.log(email);
     const upQuery = 'UPDATE teachers SET role = ? WHERE phone = ?';
     db.query(upQuery, ['admin', email], (err, result) => {
         res.json(err ? err : result)
-        console.log(err ? err : result);
+        //console.log(err ? err : result);
     })
 })
 // ocod 
@@ -208,5 +208,5 @@ app.get('/', (req, res) => {
     res.send('working')
 })
 app.listen(port, () => {
-    console.log(port);
+    //console.log(port);
 })
