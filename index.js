@@ -76,8 +76,8 @@ app.get('/students', (req, res) => {
         const query = `
         select * 
         from students 
-        where firstname like ? or lastName like ? order by firstName, lastName`;
-        db.query(query, ['%' + name + '%', '%' + name + '%'], (err, result) => {
+        where  concat(firstName, ' ', lastName) like ? order by firstName, lastName`;
+        db.query(query, ['%' + name + '%'], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
@@ -135,8 +135,8 @@ app.get('/teachers', (req, res) => {
         const query = `
         select * 
         from teachers 
-        where firstname like ? or lastName like ? order by firstName, lastName`;
-        db.query(query, ['%' + name + '%', '%' + name + '%'], (err, result) => {
+        where concat(firstName, ' ', lastName) like ?  order by firstName, lastName`;
+        db.query(query, ['%' + name + '%'], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
@@ -290,8 +290,8 @@ app.get('/guests', (req, res) => {
         const query = `
         select * 
         from guests 
-        where firstname like ? or lastName like ? order by firstName, lastName`;
-        db.query(query, ['%' + name + '%', '%' + name + '%'], (err, result) => {
+        where concat(firstName, ' ', lastName) like ? order by firstName, lastName`;
+        db.query(query, ['%' + name + '%'], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
@@ -336,8 +336,8 @@ app.get('/donor', (req, res) => {
         const query = `
         select * 
         from donor 
-        where firstname like ? or lastName like ? order by firstName, lastName`;
-        db.query(query, ['%' + name + '%', '%' + name + '%'], (err, result) => {
+        where concat(firstName, ' ', lastName) like ? order by firstName, lastName`;
+        db.query(query, ['%' + name + '%'], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
@@ -450,8 +450,8 @@ app.get('/ocod', (req, res) => {
     if (name) {
         console.log(name);
         const query = `
-        SELECT id, child.firstName,child.lastName, fatherFirstName, fatherLastName, parentsPhone, address, donor.firstName dfn, donor.lastName dln FROM child JOIN donor ON donor.phone = child.dPhone where child.firstname like ? or child.lastName like ? order by firstName, lastName`;
-        db.query(query, ['%' + name + '%', '%' + name + '%'], (err, result) => {
+        SELECT id, child.firstName,child.lastName, fatherFirstName, fatherLastName, parentsPhone, address, donor.firstName dfn, donor.lastName dln FROM child JOIN donor ON donor.phone = child.dPhone where concat(child.firstName, ' ', child.lastName) like ? order by child.firstName, child.lastName`;
+        db.query(query, ['%' + name + '%'], (err, result) => {
             res.json(err ? err : result);
             console.log(err ? err : result);
         })
